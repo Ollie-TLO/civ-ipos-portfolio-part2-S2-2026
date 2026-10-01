@@ -1,5 +1,26 @@
 from src.task_manager import add_task, delete_task, list_tasks
 from src.file_handler import load_tasks
+import sys
+import textual
+from textual.app import App, ComposeResult
+from textual.widgets import Footer, Header, Button, Static
+from textual.containers import HorizontalScroll
+
+class TaskApp(App):
+    tasks = load_tasks()
+
+    BINDINGS = [("a", "add_task", "Add Task"),
+                ("d", "delete_task", "Delete Task"),
+                ("l", "list_tasks", "List Tasks")]
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        for index, task in enumerate(self.tasks):
+            with HorizontalScroll():
+                yield Button("X", id="delete"+str(index), variant="error")
+                yield Static(task.title, id="delete")
+                
+        yield Footer()
 
 
 def main():
@@ -33,4 +54,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    TaskApp().run()
