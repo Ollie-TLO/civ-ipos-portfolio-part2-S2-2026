@@ -1,14 +1,11 @@
 from src.task_manager import add_task, delete_task, list_tasks
 from src.file_handler import load_tasks
 import sys
-import textual
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, Button, Static
-from textual.containers import Container, HorizontalGroup, VerticalScroll
+from textual.containers import Container, HorizontalGroup
 
 class TaskApp(App):
-    #tasks = load_tasks()
-    
     CSS_PATH = "task-app.tcss"
     
     BINDINGS = [("a", "add_task", "Add Task"),
@@ -34,10 +31,21 @@ class TaskApp(App):
                 yield Static(task.due_date, id="due_date", classes="col-due-date")
                 yield Static(task.status, id="status", classes="col-status")
                 with Container(classes="col-delete"):
-                    yield Button("X", id="delete"+str(index), variant="error")
+                    yield Button("X", id="delete-"+str(index), variant="error")
         yield Footer()
 
-
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        fh=open("zzz","a")
+        print(event.button.id, file=fh)
+        fh.close()
+        #action, _, index_str = button_id.partition("-")
+        if event.button.id and event.button.id.startswith("delete-"):
+            try:
+                task_index = int(event.button.id.removeprefix("delete-"))
+                delete_task(self._tasks, self._tasks[task_index].title)
+            except ValueError:
+                pass
+        
 def main():
     tasks = load_tasks()
     while True:
@@ -69,5 +77,8 @@ def main():
 
 
 if __name__ == "__main__":
-    #main()
-    TaskApp().run()
+    print(sys.argv)
+    if sys.argv[1] == "--tui":
+        TaskApp().run()
+    else:
+        main()
