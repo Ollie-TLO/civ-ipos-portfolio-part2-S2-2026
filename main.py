@@ -7,7 +7,6 @@ from textual.containers import Container, HorizontalGroup
 
 class TaskApp(App):
     CSS_PATH = "task-app.tcss"
-    
     BINDINGS = [("a", "add_task", "Add Task"),
                 ("d", "delete_task", "Delete Task"),
                 ("l", "list_tasks", "List Tasks")]
@@ -24,25 +23,30 @@ class TaskApp(App):
             yield Static("Due date", id="due_date", classes="col-due-date")
             yield Static("Status", id="status", classes="col-status")
             yield Static("Delete", id="delete", classes="col-delete")
-        for index, task in enumerate(self._tasks):
-            with HorizontalGroup(classes="task-row"):
-                yield Static(task.title, id="title", classes="col-title")
-                yield Static(task.description, id="description", classes="col-description")
-                yield Static(task.due_date, id="due_date", classes="col-due-date")
-                yield Static(task.status, id="status", classes="col-status")
-                with Container(classes="col-delete"):
-                    yield Button("X", id="delete-"+str(index), variant="error")
+        with Container(classes="task-list"):
+            for index, task in enumerate(self._tasks):
+                with HorizontalGroup(classes="task-row"):
+                    yield Static(task.title, id="title", classes="col-title")
+                    yield Static(task.description, id="description", classes="col-description")
+                    yield Static(task.due_date, id="due_date", classes="col-due-date")
+                    yield Static(task.status, id="status", classes="col-status")
+                    with Container(classes="col-delete"):
+                        delete_button = Button("X", id="delete-"+str(index), variant="error")
+                        delete_button.can_focus = False
+                        yield delete_button
         yield Footer()
-
+        #self.set_focus(None)
+        #self.query(".task-row").focus()
+        
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        fh=open("zzz","a")
-        print(event.button.id, file=fh)
-        fh.close()
-        #action, _, index_str = button_id.partition("-")
+        # action, _, index_str = button_id.partition("-")
         if event.button.id and event.button.id.startswith("delete-"):
             try:
                 task_index = int(event.button.id.removeprefix("delete-"))
                 delete_task(self._tasks, self._tasks[task_index].title)
+                self.refresh(recompose=True)
+                self.refresh_bindings()
+                #self.query_one(".task-list").refresh(recompose=True)
             except ValueError:
                 pass
         
@@ -78,7 +82,7 @@ def main():
 
 if __name__ == "__main__":
     print(sys.argv)
-    if sys.argv[1] == "--tui":
+    if 1 < len(sys.argv) and sys.argv[1] == "--tui":
         TaskApp().run()
     else:
         main()
