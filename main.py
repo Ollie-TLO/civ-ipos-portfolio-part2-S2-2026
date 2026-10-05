@@ -6,11 +6,19 @@ from textual.widgets import Footer, Header, Button, Static
 from textual.containers import Container, HorizontalGroup, VerticalScroll
 
 
-class TaskList(Container, can_focus=True):
+class DeleteButton(Button):
+    BINDINGS = [("d", "delete_task", "Delete Task")]
+
+    def __init__(self, label, index, **kwargs):
+        super().__init__(label, **kwargs)
+        self.index = index
+
+
+class TaskList(Container, can_focus=False):
     def __init__(self, tasks, **kwargs):
         super().__init__(**kwargs)
         self._tasks = tasks
-    
+
     def compose(self) -> ComposeResult:
         for index, task in enumerate(self._tasks):
             with HorizontalGroup(classes="task-row"):
@@ -19,16 +27,12 @@ class TaskList(Container, can_focus=True):
                 yield Static(task.due_date, id="due_date", classes="col-due-date")
                 yield Static(task.status, id="status", classes="col-status")
                 with Container(classes="col-delete"):
-                    #delete_button = Button("X", id="delete-"+str(index), variant="error")
-                    #delete_button.can_focus = False
-                    #yield delete_button
-                    yield Button("X", id="delete-"+str(index), variant="error")
+                    yield DeleteButton("X", index, id="delete-"+str(index), variant="error")
+
 
 class TaskApp(App):
     CSS_PATH = "task-app.tcss"
-    BINDINGS = [("a", "add_task", "Add Task"),
-                ("d", "delete_task", "Delete Task"),
-                ("l", "list_tasks", "List Tasks")]
+    BINDINGS = [("a", "add_task", "Add Task")]
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -49,15 +53,37 @@ class TaskApp(App):
         
     def on_button_pressed(self, event: Button.Pressed) -> None:
         # action, _, index_str = button_id.partition("-")
+        print(event.button.id)
         if event.button.id and event.button.id.startswith("delete-"):
             try:
                 task_index = int(event.button.id.removeprefix("delete-"))
                 delete_task(self._tasks, self._tasks[task_index].title)
-                #self.refresh(recompose=True)
-                #self.refresh_bindings()
                 #self.query_one(".task-list").refresh(recompose=True)
             except ValueError:
                 pass
+        #else:
+            #print(event.button.id)
+
+    def on_mount(self) -> None:
+        scroller = self.query_one(VerticalScroll)
+        gutter = scroller.styles.scrollbar_size_vertical
+        self.query_one(".task-header").styles.padding = (0, gutter, 0, 0)
+        print(gutter)
+        header_static = self.query_one("HorizontalGroup.task-header > .col-due-date")
+        print("header content_align:", header_static.styles.content_align)
+        print("header text_align:", header_static.styles.text_align)
+        col_static = self.query_one("HorizontalGroup.task-row > .col-due-date")
+        print("col content_align:", col_static.styles.content_align)
+        print("col text_align:", col_static.styles.text_align)
+        
+        header_static = self.query_one("HorizontalGroup.task-header > .col-due-date")
+        print("header size:", header_static.size, "region:", header_static.region)
+        row_static = self.query_one("TaskList HorizontalGroup.task-row > .col-due-date")
+        print("row size:", row_static.size, "region:", row_static.region)
+
+    def action_debug_focus(self) -> None:
+        print("focused:", self.focused)
+        print("chain:", list(self.screen.focus_chain))
         
 def main():
     tasks = load_tasks()
