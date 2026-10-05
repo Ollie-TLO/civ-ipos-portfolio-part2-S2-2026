@@ -3,7 +3,26 @@ from src.file_handler import load_tasks
 import sys
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, Button, Static
-from textual.containers import Container, HorizontalGroup
+from textual.containers import Container, HorizontalGroup, VerticalScroll
+
+
+class TaskList(Container, can_focus=True):
+    def __init__(self, tasks, **kwargs):
+        super().__init__(**kwargs)
+        self._tasks = tasks
+    
+    def compose(self) -> ComposeResult:
+        for index, task in enumerate(self._tasks):
+            with HorizontalGroup(classes="task-row"):
+                yield Static(task.title, id="title", classes="col-title")
+                yield Static(task.description, id="description", classes="col-description")
+                yield Static(task.due_date, id="due_date", classes="col-due-date")
+                yield Static(task.status, id="status", classes="col-status")
+                with Container(classes="col-delete"):
+                    #delete_button = Button("X", id="delete-"+str(index), variant="error")
+                    #delete_button.can_focus = False
+                    #yield delete_button
+                    yield Button("X", id="delete-"+str(index), variant="error")
 
 class TaskApp(App):
     CSS_PATH = "task-app.tcss"
@@ -22,21 +41,11 @@ class TaskApp(App):
             yield Static("Description", id="description", classes="col-description")
             yield Static("Due date", id="due_date", classes="col-due-date")
             yield Static("Status", id="status", classes="col-status")
-            yield Static("Delete", id="delete", classes="col-delete")
-        with Container(classes="task-list"):
-            for index, task in enumerate(self._tasks):
-                with HorizontalGroup(classes="task-row"):
-                    yield Static(task.title, id="title", classes="col-title")
-                    yield Static(task.description, id="description", classes="col-description")
-                    yield Static(task.due_date, id="due_date", classes="col-due-date")
-                    yield Static(task.status, id="status", classes="col-status")
-                    with Container(classes="col-delete"):
-                        delete_button = Button("X", id="delete-"+str(index), variant="error")
-                        delete_button.can_focus = False
-                        yield delete_button
+            yield Static("Action", id="delete", classes="col-delete")
+        with VerticalScroll():
+            yield TaskList(self._tasks, classes="task-list")
         yield Footer()
         #self.set_focus(None)
-        #self.query(".task-row").focus()
         
     def on_button_pressed(self, event: Button.Pressed) -> None:
         # action, _, index_str = button_id.partition("-")
@@ -44,8 +53,8 @@ class TaskApp(App):
             try:
                 task_index = int(event.button.id.removeprefix("delete-"))
                 delete_task(self._tasks, self._tasks[task_index].title)
-                self.refresh(recompose=True)
-                self.refresh_bindings()
+                #self.refresh(recompose=True)
+                #self.refresh_bindings()
                 #self.query_one(".task-list").refresh(recompose=True)
             except ValueError:
                 pass

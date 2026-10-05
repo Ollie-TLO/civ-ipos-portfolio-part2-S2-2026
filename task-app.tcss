@@ -7,6 +7,9 @@
 	height: auto;
     border-bottom: solid #404040;
 }
+.task-list {
+	height: auto;
+}
 .col-title { width: 1fr; padding: 0 1; }
 .col-description { width: 3fr; padding: 0 1; }
 .col-due-date { width: 12; padding: 0 1; }
