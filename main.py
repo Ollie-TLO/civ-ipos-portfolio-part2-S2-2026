@@ -32,9 +32,23 @@ def main():
             print("Invalid choice. Try again.")
 
 @click.command()
-@click.option("--list", "-l", is_flag=True)
-def command_line_handler(list):
-    print(list)
+@click.option("-a", "--add", "add_option", nargs=3, help="Help")
+@click.option("-l", "--list", "list_option", is_flag=True, help="List help")
+@click.option("-d", "--delete", "delete_option", nargs=1, help="Delete help")
+def command_line_handler(add_option, list_option, delete_option):
+    options = (add_option, list_option, delete_option)
+    count_options = sum(1 for opt in options if opt)
+    if 1 < count_options:
+        pass
+    elif 1 == count_options:
+        tasks = load_tasks()
+        if add_option:
+            title, date, description = add_option
+            add_task(tasks, title, description, date)
+        elif list_option:
+            list_tasks(tasks)
+        elif delete_option:
+            delete_task(tasks, delete_option)
 
 
 if __name__ == "__main__":
