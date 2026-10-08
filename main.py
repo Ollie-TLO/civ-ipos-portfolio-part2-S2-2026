@@ -1,6 +1,6 @@
 from src.task_manager import add_task, delete_task, list_tasks
 from src.file_handler import load_tasks
-
+import click
 
 def main():
     tasks = load_tasks()
@@ -31,6 +31,12 @@ def main():
         else:
             print("Invalid choice. Try again.")
 
+@click.command()
+@click.option("--list", "-l", is_flag=True)
+def command_line_handler(list):
+    print(list)
+
 
 if __name__ == "__main__":
-    main()
+    command_line_handler()
+    #main()
