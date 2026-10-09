@@ -23,21 +23,23 @@ class TaskList(Container, can_focus=False):
         for index, task in enumerate(self._tasks):
             with HorizontalGroup(classes="task-row"):
                 yield Static(task.title, id="title", classes="col-title")
-                yield Static(task.description, id="description", classes="col-description")
+                yield Static(task.description, id="description",
+                             classes="col-description")
                 yield Static(task.due_date, id="due_date", classes="col-due-date")
                 yield Static(task.status, id="status", classes="col-status")
                 with Container(classes="col-delete"):
-                    yield DeleteButton("X", index, id="delete-"+str(index), variant="error")
+                    yield DeleteButton("X", index, id="delete-" + str(index),
+                                       variant="error")
 
 
 class TaskApp(App):
     CSS_PATH = "task-app.tcss"
     BINDINGS = [("a", "add_task", "Add Task")]
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._tasks = load_tasks()
-        
+
     def compose(self) -> ComposeResult:
         yield Header()
         with HorizontalGroup(classes="task-header"):
@@ -49,8 +51,7 @@ class TaskApp(App):
         with VerticalScroll():
             yield TaskList(self._tasks, classes="task-list")
         yield Footer()
-        #self.set_focus(None)
-        
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         # action, _, index_str = button_id.partition("-")
         print(event.button.id)
@@ -58,11 +59,9 @@ class TaskApp(App):
             try:
                 task_index = int(event.button.id.removeprefix("delete-"))
                 delete_task(self._tasks, self._tasks[task_index].title)
-                #self.query_one(".task-list").refresh(recompose=True)
+                # self.query_one(".task-list").refresh(recompose=True)
             except ValueError:
                 pass
-        #else:
-            #print(event.button.id)
 
     def on_mount(self) -> None:
         scroller = self.query_one(VerticalScroll)
@@ -75,7 +74,7 @@ class TaskApp(App):
         col_static = self.query_one("HorizontalGroup.task-row > .col-due-date")
         print("col content_align:", col_static.styles.content_align)
         print("col text_align:", col_static.styles.text_align)
-        
+
         header_static = self.query_one("HorizontalGroup.task-header > .col-due-date")
         print("header size:", header_static.size, "region:", header_static.region)
         row_static = self.query_one("TaskList HorizontalGroup.task-row > .col-due-date")
@@ -84,7 +83,8 @@ class TaskApp(App):
     def action_debug_focus(self) -> None:
         print("focused:", self.focused)
         print("chain:", list(self.screen.focus_chain))
-        
+
+
 def main():
     tasks = load_tasks()
     while True:
