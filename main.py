@@ -31,15 +31,18 @@ def main():
         else:
             print("Invalid choice. Try again.")
 
+
 @click.command()
-@click.option("-a", "--add", "add_option", nargs=3, help="Help")
+@click.option("-a", "--add", "add_option", nargs=3, metavar="<title> <DD-MM-YYYY> <description>", help="Help")
 @click.option("-l", "--list", "list_option", is_flag=True, help="List help")
-@click.option("-d", "--delete", "delete_option", nargs=1, help="Delete help")
+@click.option("-d", "--delete", "delete_option", nargs=1, metavar="<task title>", help="Delete help")
 def command_line_handler(add_option, list_option, delete_option):
+    
     options = (add_option, list_option, delete_option)
     count_options = sum(1 for opt in options if opt)
+    
     if 1 < count_options:
-        pass
+        raise click.UsageError("Choose only one of <-a|-l|-f|-d>")
     elif 1 == count_options:
         tasks = load_tasks()
         if add_option:
@@ -48,9 +51,14 @@ def command_line_handler(add_option, list_option, delete_option):
         elif list_option:
             list_tasks(tasks)
         elif delete_option:
-            delete_task(tasks, delete_option)
+            if delete_task(tasks, delete_option):
+                print("Task deleted successfully.")
+            else:
+                print("Task not found.")
+    else:
+        # No command line arguments so fall through to original behaviour.
+        main()
 
 
 if __name__ == "__main__":
     command_line_handler()
-    #main()
