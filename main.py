@@ -2,6 +2,7 @@ from src.task_manager import add_task, delete_task, list_tasks
 from src.file_handler import load_tasks
 import click
 
+
 def main():
     tasks = load_tasks()
     while True:
@@ -33,14 +34,14 @@ def main():
 
 
 @click.command()
-@click.option("-a", "--add", "add_option", nargs=3, metavar="<title> <DD-MM-YYYY> <description>", help="Help")
-@click.option("-l", "--list", "list_option", is_flag=True, help="List help")
-@click.option("-d", "--delete", "delete_option", nargs=1, metavar="<task title>", help="Delete help")
+@click.option("-a", "--add",       "add_option", nargs=3,               metavar="<title> <DD-MM-YYYY> <description>", help="Add a new task")  # noqa: E241 E501 B950
+@click.option("-l", "--list",     "list_option",          is_flag=True,                                               help="List all tasks")  # noqa: E241 E501 B950
+@click.option("-d", "--delete", "delete_option", nargs=1,               metavar="<task title>",                       help="Delete named task")  # noqa: E241 E501 B950
 def command_line_handler(add_option, list_option, delete_option):
-    
+
     options = (add_option, list_option, delete_option)
     count_options = sum(1 for opt in options if opt)
-    
+
     if 1 < count_options:
         raise click.UsageError("Choose only one of <-a|-l|-f|-d>")
     elif 1 == count_options:

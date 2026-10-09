@@ -1,6 +1,5 @@
 import main
 import os
-import textwrap
 import unittest
 from click.testing import CliRunner
 
@@ -16,7 +15,7 @@ class TestMain(unittest.TestCase):
         and backing up the original task binary file.
         """
         self.runner = CliRunner()
-        self.maxDiff = 5  # make unittest show all diff text
+        self.maxDiff = None  # make unittest show all diff text
         self.original_file = "tasks.bin"
         if os.path.exists(TEST_FILE):
             os.remove(TEST_FILE)
@@ -33,19 +32,20 @@ class TestMain(unittest.TestCase):
         if os.path.exists(TEST_FILE):
             os.rename(TEST_FILE, "tasks.bin")
 
-
-    def testMainCliCreateTask(self):
+    def test_main_cli_create_task(self):
         """
         Test adding a new task to the task list via command line
         Verify that the task is successfully added and the list size increases.
         """
-        result = self.runner.invoke(main.command_line_handler, ['-a', 'Title', '15-05-2025', "Task description"])
+        result = self.runner.invoke(main.command_line_handler,
+                                    ['-a', 'Title', '15-05-2025', "Task description"])
         self.assertEqual(0, result.exit_code)
         self.assertEqual("", result.output)
 
         result = self.runner.invoke(main.command_line_handler, ['-l'])
         self.assertEqual(0, result.exit_code)
-        expected_outcome = "Title | Task description | Due: 15-05-2025 | Status: pending" + "\n"
+        expected_outcome = (
+            "Title | Task description | Due: 15-05-2025 | Status: pending" + "\n")
         self.assertEqual(expected_outcome, result.output)
 
 
