@@ -1,0 +1,32 @@
+.task-header {
+	height: auto;
+    text-style: bold;
+    border-bottom: solid #808080;
+    padding-right: 2
+}
+.task-row {
+	height: auto;
+    border-bottom: solid #404040;
+}
+.task-list {
+	height: auto;
+}
+VerticalScroll {
+    scrollbar-gutter: stable;
+}
+.col-title { width: 1fr; padding: 0 1; }
+.col-description { width: 3fr; padding: 0 1; }
+.col-due-date { width: 12; padding: 0 1; }
+.col-status { width: 10; padding: 0 1; }
+.col-delete {
+    height: auto;
+    width: 8;
+    align: center top;
+    padding: 0 1;
+}
+.col-delete Button {
+    height: 1;
+    min-width: 0;
+    border: none;
+    padding: 0 0;
+}
