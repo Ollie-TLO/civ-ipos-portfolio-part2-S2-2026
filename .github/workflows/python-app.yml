@@ -46,7 +46,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        # Temporarily disable the multi version test
+        # I dont know who, but Someone is paying the power bill
+        #python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.12"]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
