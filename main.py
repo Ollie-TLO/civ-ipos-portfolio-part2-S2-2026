@@ -7,14 +7,18 @@ from textual.containers import Container, HorizontalGroup, VerticalScroll
 
 
 class DeleteButton(Button):
-    BINDINGS = [("d", "delete_task", "Delete Task")]
+    BINDINGS = [("d", "app.delete_task", "Delete Task")]
 
     def __init__(self, label, index, **kwargs):
         super().__init__(label, **kwargs)
         self.index = index
 
+    def action_delete_task(self) -> None:
+        print("DeleteButton.action_delete_task")
+
 
 class TaskList(Container, can_focus=False):
+
     def __init__(self, tasks, **kwargs):
         super().__init__(**kwargs)
         self._tasks = tasks
@@ -59,30 +63,42 @@ class TaskApp(App):
             try:
                 task_index = int(event.button.id.removeprefix("delete-"))
                 delete_task(self._tasks, self._tasks[task_index].title)
-                # self.query_one(".task-list").refresh(recompose=True)
+                self.query_one(".task-list").refresh(recompose=True)
             except ValueError:
                 pass
 
-    def on_mount(self) -> None:
-        scroller = self.query_one(VerticalScroll)
-        gutter = scroller.styles.scrollbar_size_vertical
-        self.query_one(".task-header").styles.padding = (0, gutter, 0, 0)
-        print(gutter)
-        header_static = self.query_one("HorizontalGroup.task-header > .col-due-date")
-        print("header content_align:", header_static.styles.content_align)
-        print("header text_align:", header_static.styles.text_align)
-        col_static = self.query_one("HorizontalGroup.task-row > .col-due-date")
-        print("col content_align:", col_static.styles.content_align)
-        print("col text_align:", col_static.styles.text_align)
+    def action_delete_task(self) -> None:
+        if self.focused.id and self.focused.id.startswith("delete-"):
+            try:
+                task_index = int(self.focused.id.removeprefix("delete-"))
+                delete_task(self._tasks, self._tasks[task_index].title)
+                self.query_one(".task-list").refresh(recompose=True)
+            except ValueError:
+                pass
 
-        header_static = self.query_one("HorizontalGroup.task-header > .col-due-date")
-        print("header size:", header_static.size, "region:", header_static.region)
-        row_static = self.query_one("TaskList HorizontalGroup.task-row > .col-due-date")
-        print("row size:", row_static.size, "region:", row_static.region)
+    # FIXME Delete before PR Review
+    # def on_mount(self) -> None:
+    #     scroller = self.query_one(VerticalScroll)
+    #     gutter = scroller.styles.scrollbar_size_vertical
+    #     self.query_one(".task-header").styles.padding = (0, gutter, 0, 0)
+    #     print(gutter)
+    #     header_static = self.query_one("HorizontalGroup.task-header > .col-due-date")
+    #     print("header content_align:", header_static.styles.content_align)
+    #     print("header text_align:", header_static.styles.text_align)
+    #     col_static = self.query_one("HorizontalGroup.task-row > .col-due-date")
+    #     print("col content_align:", col_static.styles.content_align)
+    #     print("col text_align:", col_static.styles.text_align)
+    #
+    #     header_static = self.query_one("HorizontalGroup.task-header > .col-due-date")
+    #     print("header size:", header_static.size, "region:", header_static.region)
+    #     row_static = self.query_one(
+    #         "TaskList HorizontalGroup.task-row > .col-due-date")
+    #     print("row size:", row_static.size, "region:", row_static.region)
 
-    def action_debug_focus(self) -> None:
-        print("focused:", self.focused)
-        print("chain:", list(self.screen.focus_chain))
+    # FIXME Delete before PR Review
+    # def action_debug_focus(self) -> None:
+    #     print("focused:", self.focused)
+    #     print("chain:", list(self.screen.focus_chain))
 
 
 def main():
@@ -116,8 +132,9 @@ def main():
 
 
 if __name__ == "__main__":
-    print(sys.argv)
-    if 1 < len(sys.argv) and sys.argv[1] == "--tui":
+    # print(sys.argv)
+    if len(sys.argv) == 1:
         TaskApp().run()
-    else:
+    elif len(sys.argv) == 2 and sys.argv[1] == "--oldui":
         main()
+    # else:

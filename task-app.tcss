@@ -2,6 +2,7 @@
 	height: auto;
     text-style: bold;
     border-bottom: solid #808080;
+    padding-right: 2
 }
 .task-row {
 	height: auto;
