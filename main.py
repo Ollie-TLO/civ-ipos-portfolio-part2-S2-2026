@@ -34,12 +34,14 @@ def main():
 
 
 @click.command()
-@click.option("-a", "--add",       "add_option", nargs=3,               metavar="<title> <DD-MM-YYYY> <description>", help="Add a new task")  # noqa: E241 E501 B950
-@click.option("-l", "--list",     "list_option",          is_flag=True,                                               help="List all tasks")  # noqa: E241 E501 B950
-@click.option("-d", "--delete", "delete_option", nargs=1,               metavar="<task title>",                       help="Delete named task")  # noqa: E241 E501 B950
-def command_line_handler(add_option, list_option, delete_option):
+@click.option("-a", "--add",         "add_option", nargs=3,               metavar="<title> <DD-MM-YYYY> <description>", help="Add a new task")  # noqa: E241 E501 B950
+@click.option("-l", "--list",       "list_option",          is_flag=True,                                               help="List all tasks")  # noqa: E241 E501 B950
+@click.option("-d", "--delete",   "delete_option", nargs=1,               metavar="<task title>",                       help="Delete named task")  # noqa: E241 E501 B950
+@click.option(      "--classic",     "classic_ui", nargs=1,                                                             help="Use old interactive interface")  # noqa: E241 E501 B950
+def command_line_handler(add_option, list_option, delete_option, classic_ui):
 
-    options = (add_option, list_option, delete_option)
+    # Ensure that only one of these options have been provided
+    options = (add_option, list_option, delete_option, classic_ui)
     count_options = sum(1 for opt in options if opt)
 
     if 1 < count_options:
@@ -56,8 +58,12 @@ def command_line_handler(add_option, list_option, delete_option):
                 print("Task deleted successfully.")
             else:
                 print("Task not found.")
+        elif classic_ui:
+            main()
+
     else:
-        # No command line arguments so fall through to original behaviour.
+        # No command line arguments so start interactive mode.
+        # This awaits the textual interface that will take the place of main.
         main()
 
 
