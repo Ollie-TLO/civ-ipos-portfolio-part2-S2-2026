@@ -27,3 +27,8 @@ extend-select = N
 max-arguments = 5
 max-branches = 8
 max-statements = 25
+
+per-file-ignores =
+    tests/*: E501, B950
+
+extend-exclude = .venv
