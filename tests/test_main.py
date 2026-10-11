@@ -1,5 +1,6 @@
 import main
 import os
+from pathlib import Path
 import unittest
 from click.testing import CliRunner
 
@@ -17,8 +18,7 @@ class TestMain(unittest.TestCase):
         self.runner = CliRunner()
         self.maxDiff = None  # make unittest show all diff text
         self.original_file = "tasks.bin"
-        if os.path.exists(TEST_FILE):
-            os.remove(TEST_FILE)
+        Path(TEST_FILE).unlink(missing_ok=True)
         if os.path.exists("tasks.bin"):
             os.rename("tasks.bin", TEST_FILE)
 
@@ -27,8 +27,7 @@ class TestMain(unittest.TestCase):
         Clean up the test environment by removing any test-created binary files
         and restoring the original task binary file.
         """
-        if os.path.exists("tasks.bin"):
-            os.remove("tasks.bin")
+        Path("tasks.bin").unlink(missing_ok=True)
         if os.path.exists(TEST_FILE):
             os.rename(TEST_FILE, "tasks.bin")
 
