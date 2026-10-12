@@ -4,7 +4,8 @@ from textual.widgets import Footer, Header, Button, Static
 from textual.containers import Container, HorizontalGroup, VerticalScroll
 import src.add_task_modal
 from src.task_manager import add_task, delete_task, list_tasks
-from src.file_handler import load_tasks
+import src.task
+from src.file_handler import load_tasks, save_tasks
 
 
 class DeleteButton(Button):
@@ -82,10 +83,18 @@ class TaskApp(App):
         """
         Handle add task action, from key_a
         """
-        def handle_add_task_modal(flag: bool) -> None:
-            pass
-        
-        self.push_screen(src.add_task_modal.AddTaskModal(), handle_add_task_modal)
+        def handle_add_task_modal(result: dict | None) -> None:
+            if result:
+                # Validate in the AddTaskModal has verified
+                # what src.task_manager.add_task() would have
+                self._tasks.append(src.task_manager.Task(result["title"], result["description"], result["due_date"], result["status"]))
+                src.file_handler.save_tasks(self._tasks)
+                self.query_one(".task-list").refresh(recompose=True)
+                print(f"Add {result}")
+        self.push_screen(src.add_task_modal.AddTaskModal(self._tasks), handle_add_task_modal)
+        # add_task(self._tasks, results["title"], results["description"],
+        #          results["due_date"], results["status"])
+
 
     def action_delete_task(self) -> None:
         """
