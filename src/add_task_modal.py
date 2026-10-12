@@ -15,7 +15,8 @@ class AddTaskModal(ModalScreen):
         self._tasks = tasks
 
     def title_is_unique(self, value: str) -> bool:
-        return not any(value.strip().casefold() == t.title.casefold() for t in self._tasks)
+        return not any(value.strip().casefold() == t.title.casefold()
+                       for t in self._tasks)
 
     def date_is_valid(self, value: str) -> bool:
         try:
@@ -28,10 +29,14 @@ class AddTaskModal(ModalScreen):
         with VerticalGroup(classes="task-row"):
             yield Label("Add task")
             yield Input(placeholder="Title", id="title", classes="col-field",
-                        validators=[Function(self.title_is_unique, "Error: A task with this title already exists.")])
+                        validators=[Function(
+                            self.title_is_unique,
+                            "Error: A task with this title already exists.")])
             yield Input(placeholder="Due date (DD-MM-YYYY)", id="due-date",
                         classes="col-field", restrict=r"[0-9-]*",
-                        validators=[Function(self.date_is_valid, "Error: Invalid date format. Use DD-MM-YYYY.")])
+                        validators=[Function(
+                            self.date_is_valid,
+                            "Error: Invalid date format. Use DD-MM-YYYY.")])
             yield Input(placeholder="Status", id="status", classes="col-field")
             yield Input(placeholder="Task Description", id="description",
                         classes="col-field")
