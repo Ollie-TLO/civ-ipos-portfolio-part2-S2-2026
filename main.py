@@ -1,9 +1,10 @@
-from src.task_manager import add_task, delete_task, list_tasks
-from src.file_handler import load_tasks
 import sys
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, Button, Static
 from textual.containers import Container, HorizontalGroup, VerticalScroll
+import src.add_task_modal
+from src.task_manager import add_task, delete_task, list_tasks
+from src.file_handler import load_tasks
 
 
 class DeleteButton(Button):
@@ -76,6 +77,15 @@ class TaskApp(App):
                 self.query_one(".task-list").refresh(recompose=True)
             except ValueError:
                 pass
+
+    def action_add_task(self) -> None:
+        """
+        Handle add task action, from key_a
+        """
+        def handle_add_task_modal(flag: bool) -> None:
+            pass
+        
+        self.push_screen(src.add_task_modal.AddTaskModal(), handle_add_task_modal)
 
     def action_delete_task(self) -> None:
         """
