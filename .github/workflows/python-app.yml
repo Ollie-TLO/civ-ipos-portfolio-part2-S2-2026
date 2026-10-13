@@ -8,9 +8,11 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: write
 
 env:
   PYTHONUNBUFFERED: "1"
@@ -70,3 +72,9 @@ jobs:
         with:
           name: coverage-${{ matrix.python-version }}
           path: coverage.xml
+      - name: Create Coverage Report
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: orgoro/coverage@v3.2
+        with:
+          coverageFile: coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
