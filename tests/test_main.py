@@ -42,7 +42,30 @@ class TestTaskApp(unittest.IsolatedAsyncioTestCase):
         if os.path.exists(TEST_FILE):
             os.rename(TEST_FILE, "tasks.bin")
 
-    # async def test_main_tui_add_task(self):
+    async def test_main_tui_add_task(self):
+        """
+        Test adding a new task to the task list via the TUI, keyboard driven
+        Verify that the task is successfully added and the list size increases.
+        """
+        inputs = ("a", *"This title",
+                  "tab", *"13-12-2028",
+                  "tab", *"urgent",
+                  "tab", *"Long, wordy prose here.",
+                  "tab", "enter")
+        app = main.TaskApp()
+        async with app.run_test() as pilot:
+            self.assertEqual(0, len(app._tasks))
+            self.assertEqual(0, len(app.query_one("VerticalScroll").
+                                    query(".task-row")), "len(tasklist)")
+            await pilot.press(*inputs)
+            await pilot.pause()
+            self.assertEqual(1, len(app._tasks))
+            self.assertEqual(1, len(app.query_one("VerticalScroll").
+                                    query(".task-row")), "len(tasklist)")
+            self.assertEqual(1, len(app._tasks))
+            row = app.query_one("VerticalScroll").query(".task-row").first()
+            cell = row.query_one(".col-due-date")
+            self.assertEqual("13-12-2028", str(cell.content))
 
     async def test_main_tui_list_task(self):
         """
