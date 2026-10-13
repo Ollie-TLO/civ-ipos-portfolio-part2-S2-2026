@@ -1,3 +1,4 @@
+from typing import Optional
 import sys
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, Button, Static
@@ -83,7 +84,7 @@ class TaskApp(App):
         """
         Handle add task action, from key_a
         """
-        def handle_add_task_modal(result: dict | None) -> None:
+        def handle_add_task_modal(result: Optional[dict]) -> None:
             if result:
                 # Validate in the AddTaskModal has verified
                 # what src.task_manager.add_task() would have
