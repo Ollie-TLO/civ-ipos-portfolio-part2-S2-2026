@@ -1,5 +1,4 @@
 from typing import Optional
-import sys
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, Button, Static
 from textual.containers import Container, HorizontalGroup, VerticalScroll
@@ -7,6 +6,7 @@ import src.add_task_modal
 from src.task_manager import add_task, delete_task, list_tasks
 import src.task
 from src.file_handler import load_tasks
+import click
 
 
 class DeleteButton(Button):
@@ -111,6 +111,53 @@ class TaskApp(App):
                 pass
 
 
+@click.command(name="taskman")
+@click.option("-a", "--add",         "add_option", nargs=3,               metavar="<title> <DD-MM-YYYY> <description>", help="Add a new task")  # noqa: E241 E501 B950
+@click.option("-l", "--list",       "list_option",          is_flag=True,                                               help="List all tasks")  # noqa: E241 E501 B950
+@click.option("-d", "--delete",   "delete_option", nargs=1,               metavar="<task title>",                       help="Delete named task")  # noqa: E241 E501 B950
+@click.option(      "--classic",     "classic_ui",          is_flag=True,                                               help="Use old interactive interface")  # noqa: E201 E241 E501 B950
+def command_line_handler(add_option, list_option, delete_option, classic_ui):  # noqa: C901 E501
+    """
+    Click command line handler. Click's main focus appears to be a command based
+    interface, (like git add/commit/status/etc). Overkill for this app. Instead, use an
+    empty click command with a switch for each activity (add/list/delete).
+
+    For each option provided on the command line, click passes a click.Option to this
+    function. Here, only one option should have been provided.
+
+    Args:
+        add_option:    click.Option with title, date, description inputs
+        list_option:   click.Option with title, date, description inputs
+        delete_option: click.Option with title, date, description inputs
+        classic_ui:    click.Option to trigger interactive text CLI
+    """
+    # Ensure that only one of these options have been provided
+    options = (add_option, list_option, delete_option, classic_ui)
+    count_options = sum(1 for opt in options if opt)
+
+    if 1 < count_options:
+        raise click.UsageError("Choose only one of <-a|-l|-d|--classic>")
+    elif 1 == count_options:
+        tasks = load_tasks()
+        if add_option:
+            title, date, description = add_option
+            add_task(tasks, title, description, date)
+        elif list_option:
+            list_tasks(tasks)
+        elif delete_option:
+            if delete_task(tasks, delete_option):
+                print("Task deleted successfully.")
+            else:
+                print("Task not found.")
+        elif classic_ui:
+            # Maybe the old way should be removed, but it was handy during testing.
+            main()
+    else:
+        # No command line arguments so start interactive mode.
+        # This awaits the textual interface that will take the place of main.
+        App().run()
+
+
 def main():
     tasks = load_tasks()
     while True:
@@ -142,7 +189,4 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        TaskApp().run()
-    elif len(sys.argv) == 2 and sys.argv[1] == "--classic":
-        main()
+    command_line_handler()
