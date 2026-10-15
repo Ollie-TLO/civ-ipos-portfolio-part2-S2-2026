@@ -1,0 +1,39 @@
+AddTaskModal {
+    align: center middle;
+}
+AddTaskModal Label {
+    margin: 0 2;
+}
+AddTaskModal .task-list {
+    /*height: auto;*/
+}
+AddTaskModal .task-row {
+	height: auto;
+    width: 50%;
+    min-width:60;
+    padding: 1 1 0 1;
+    border: solid #808080;
+}
+AddTaskModal .col-field {
+	height: auto;
+    text-style: bold;
+    margin: 1 0;
+    padding: 0 1;
+}
+AddTaskModal .buttons {
+    width: 100%;
+    height: auto;
+    align-horizontal: center;
+    margin: 1 0;
+    /*background: blue;*/
+}
+AddTaskModal .buttons Button {
+    /*margin: 6 6 6 6;*/
+    /*background: green;*/
+}
+AddTaskModal #cancel {
+    margin-right: 5;
+}
+AddTaskModal #add {
+    margin-left: 5;
+}

@@ -39,7 +39,6 @@ class TestTaskManager(unittest.TestCase):
         Verify that the task is successfully added and the list size increases.
         """
         result = add_task(self.tasks, "Test Task", "Description", "01-12-2024")
-        print(self.tasks[0].description)
         self.assertTrue(result)
         self.assertEqual(len(self.tasks), 1)
 
