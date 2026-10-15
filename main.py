@@ -93,7 +93,6 @@ class TaskApp(App):
                 self._tasks.append(task)
                 src.file_handler.save_tasks(self._tasks)
                 self.query_one(".task-list").refresh(recompose=True)
-                print(f"Add {result}")
         self.push_screen(src.add_task_modal.AddTaskModal(self._tasks),
                          handle_add_task_modal)
 
@@ -111,12 +110,12 @@ class TaskApp(App):
                 pass
 
 
-@click.command(name="taskman")
+@click.command(name="taskman", help="Create, list and delete tasks.")
 @click.option("-a", "--add",         "add_option", nargs=3,               metavar="<title> <DD-MM-YYYY> <description>", help="Add a new task")  # noqa: E241 E501 B950
 @click.option("-l", "--list",       "list_option",          is_flag=True,                                               help="List all tasks")  # noqa: E241 E501 B950
 @click.option("-d", "--delete",   "delete_option", nargs=1,               metavar="<task title>",                       help="Delete named task")  # noqa: E241 E501 B950
-@click.option(      "--classic",     "classic_ui",          is_flag=True,                                               help="Use old interactive interface")  # noqa: E201 E241 E501 B950
-def command_line_handler(add_option, list_option, delete_option, classic_ui):  # noqa: C901 E501
+@click.option(      "--classic", "classic_option",          is_flag=True,                                               help="Use old interactive interface")  # noqa: E201 E241 E501 B950
+def command_line_handler(add_option, list_option, delete_option, classic_option):  # noqa: C901 E501
     """
     Click command line handler. Click's main focus appears to be a command based
     interface, (like git add/commit/status/etc). Overkill for this app. Instead, use an
@@ -132,7 +131,7 @@ def command_line_handler(add_option, list_option, delete_option, classic_ui):  #
         classic_ui:    click.Option to trigger interactive text CLI
     """
     # Ensure that only one of these options have been provided
-    options = (add_option, list_option, delete_option, classic_ui)
+    options = (add_option, list_option, delete_option, classic_option)
     count_options = sum(1 for opt in options if opt)
 
     if 1 < count_options:
@@ -149,16 +148,16 @@ def command_line_handler(add_option, list_option, delete_option, classic_ui):  #
                 print("Task deleted successfully.")
             else:
                 print("Task not found.")
-        elif classic_ui:
+        elif classic_option:
             # Maybe the old way should be removed, but it was handy during testing.
-            main()
+            classic_ui()
     else:
         # No command line arguments so start interactive mode.
         # This awaits the textual interface that will take the place of main.
-        App().run()
+        TaskApp().run()
 
 
-def main():
+def classic_ui():
     tasks = load_tasks()
     while True:
         print("\nTask Manager CLI")
